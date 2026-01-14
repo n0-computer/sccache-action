@@ -130,7 +130,7 @@ function getDirname(version: string): Error | string {
 }
 
 function getArch(): Error | string {
-  switch (process.arch) {
+  switch (core.platform.arch) {
     case 'x64':
       return 'x86_64';
     case 'arm64':
@@ -143,20 +143,20 @@ function getArch(): Error | string {
 }
 
 function getPlatform(): Error | string {
-  switch (process.platform) {
-    case 'darwin':
-      return 'apple-darwin';
-    case 'win32':
-      return 'pc-windows-msvc';
-    case 'linux':
-      if (process.arch == 'arm') {
-        return 'unknown-linux-musleabi';
-      } else {
-        return 'unknown-linux-musl';
-      }
-    default:
-      return Error(`Unsupported platform "${process.platform}"`);
+  if (core.platform.isMacOS) {
+    return 'apple-darwin';
   }
+  if (core.platform.isWindows) {
+    return 'pc-windows-msvc';
+  }
+  if (core.platform.isLinux) {
+    if (core.platform.arch == 'arm') {
+      return 'unknown-linux-musleabi';
+    } else {
+      return 'unknown-linux-musl';
+    }
+  }
+  return Error(`Unsupported platform "${process.platform}"`);
 }
 
 function getExtension(): string {
